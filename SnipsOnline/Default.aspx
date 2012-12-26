@@ -256,7 +256,7 @@ body {
                       <asp:Login ID="Login1" runat="server" Height="174px" 
                           Width="266px" LoginButtonImageUrl="~/images/loginbtn.png" LoginButtonText="" 
                           LoginButtonType="Image" TitleText="" style="margin-top: 33px; height: 114px;" 
-                          DestinationPageUrl="~/dashboard.aspx" PasswordRecoveryText="Forgotten Your Password?" 
+                          DestinationPageUrl="~/express.aspx" PasswordRecoveryText="Forgotten Your Password?" 
                           VisibleWhenLoggedIn="False" CreateUserText="Register For New Account" 
                           CreateUserUrl="register.aspx" EnableViewState="False" 
                           PasswordRecoveryUrl="rsetpasswd.aspx" 
@@ -334,7 +334,7 @@ body {
                       <br />
                       <br />
                       <asp:LoginName ID="LoginName1" runat="server" 
-                          FormatString="&lt;br&gt;Welcome Back, &lt;b&gt;{0}&lt;/B&gt;. &lt;br&gt;&lt;br&gt;You are already logged on to this system. Please proceed to your dashboard by clicking &lt;a class=&quot;result2&quot; href=&quot;./dashboard.aspx&quot;&gt;here&lt;/a&gt;&lt;br&gt;&lt;br&gt;If you are not {0}, please " 
+                          FormatString="&lt;br&gt;Welcome Back, &lt;b&gt;{0}&lt;/B&gt;. &lt;br&gt;&lt;br&gt;You are already logged on to this system. Please proceed to your dashboard by clicking &lt;a class=&quot;result2&quot; href=&quot;./express.aspx&quot;&gt;here&lt;/a&gt;&lt;br&gt;&lt;br&gt;If you are not {0}, please " 
                           CssClass="Result2"/>
                       <asp:LoginStatus ID="LoginStatus2" runat="server" LoginText="" 
                           LogoutPageUrl="~/Default.aspx" LogoutText="Sign-out" cssClas="Result" 
@@ -350,7 +350,7 @@ body {
     <td height="46" colspan="11" align="center" valign="middle" background="images/shadow.png"><table width="960" border="0" align="center" cellpadding="0" cellspacing="0">
       <tr>
         <td width="944" height="24" align="center" valign="middle" bgcolor="#999999"><span class="Test">
-            Copyright © 2012 Powered by SnipsOnline.Com All Rights 
+            Copyright © 2012-2013 Powered by SnipsOnline.Com All Rights 
             Reserved.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="aboutus.aspx" class="Test">About 
             Us</a> | <a href="Privacy.aspx" class="Test">Privacy</a> | <a href="tc.aspx" class="Test">
             Terms </a>|<a href="advertisement.aspx" class="Test">Advertise With Us</a> | <a href="contact.aspx" class="Test">

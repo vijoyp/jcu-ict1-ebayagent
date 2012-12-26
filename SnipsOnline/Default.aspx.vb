@@ -17,7 +17,8 @@ Partial Class _Default
         Dim cmd As New OdbcCommand
         Dim objDataReader As OdbcDataReader
 
-        strSQL = "Select * from ebayparentcat order by categoryName"
+        strSQL = "Select * from ebayparentcat where categoryId = 1 or categoryId = 220 or categoryId = 45100 order by categoryName"
+
 
         cn = New OdbcConnection(ConfigurationManager.ConnectionStrings("snipsodbc").ConnectionString)
 
@@ -32,7 +33,7 @@ Partial Class _Default
         While objDataReader.Read()
             catparent.Items.Add(New ListItem(objDataReader("CategoryName"), objDataReader("CategoryID"), True))
         End While
-        catparent.SelectedIndex = 4
+        catparent.SelectedIndex = 3
 
 
         objDataReader.Close()
