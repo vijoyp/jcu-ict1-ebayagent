@@ -213,8 +213,8 @@ Partial Class singleItem
     Private Function setShoppingUrl(ByVal callname As String) As String
 
         Dim Str As String
-        Str = System.Configuration.ConfigurationManager.AppSettings("ShoppingAPIP")
-        Str = Str & "?&appid=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppIDP")
+        Str = System.Configuration.ConfigurationManager.AppSettings("ShoppingAPI")
+        Str = Str & "?&appid=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppID")
         Str = Str & "&version=803"
         Str = Str & "&siteid=EBAY-US"
         Str = Str & "&callname=" & callname
