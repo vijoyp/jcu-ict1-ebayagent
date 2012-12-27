@@ -66,7 +66,7 @@ Partial Class register
         temp = temp & "<p>Username : " & usr.UserName & "<br />"
         temp = temp & "Password : " & CreateUserWizard2.Password & "</p>"
         temp = temp & "<p>Please retain your login information, as we will not be able to retreive your password for you again.<br />"
-        temp = temp & "Please click " & "<a href='http://localhost:50277/SnipsOnline/activate.aspx?Guid=jlj4vu9h8yaaddfrwc4kepbewklau020jofx82pflxdlh8vhhbt1gs4qtnix9125kuak6gcrv057onm&id=" & userid.ToString & "' target=""""_blank"""">Here</a>" & " to activate this account."
+        temp = temp & "Please click " & "<a href='http://localhost:" & Request.Url.Port & "/SnipsOnline/activate.aspx?Guid=jlj4vu9h8yaaddfrwc4kepbewklau020jofx82pflxdlh8vhhbt1gs4qtnix9125kuak6gcrv057onm&id=" & userid.ToString & "' target=""""_blank"""">Here</a>" & " to activate this account."
         temp = temp & "<br />"
         temp = temp & "<br />"
         temp = temp & "**************************************************<br />"
