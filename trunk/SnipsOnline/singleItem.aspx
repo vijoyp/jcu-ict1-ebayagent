@@ -91,6 +91,7 @@ margin-top: 1px;
     padding-bottom:0.75em;
 }
 
+
 .vr {
 border-left:1px dashed #CCCCCC;
 height:250px;

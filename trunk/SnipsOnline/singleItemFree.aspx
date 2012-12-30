@@ -50,7 +50,6 @@ a:active {
 	color: #D6D6D6;
 }
 
-
 .Result2 a:link {
 	text-decoration: none;
 	color:#06F;
