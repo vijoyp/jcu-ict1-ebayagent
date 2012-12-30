@@ -264,6 +264,12 @@ body {
         height: 14px;
         width: 50px;
     }
+    .style44
+    {
+        font-family: Arial;
+        font-size: 15px;
+        width: 165px;
+    }
     .style45
     {
         height: 29px;
@@ -490,8 +496,10 @@ body {
     <td class="style45"></td>
     <td align="right" valign="middle" class="style56"></td>
     <td valign="middle" class="style26" class=Fields_Small2 colspan="2">
-        <asp:CheckBox ID="CheckBox1" runat="server" Text="Singapore Only" />
-      </td>
+        <asp:checkboxlist id="localcheck" runat="server" CssClass="Fields_Small1" 
+            AutoPostBack="True">
+            <asp:ListItem Value="True">Local Search Only</asp:ListItem>
+        </asp:checkboxlist></td>
   </tr>
  <tr>
     <td class="style45"></td>
@@ -502,7 +510,7 @@ body {
                 ValidationGroup="SnipsGrp" />
         </td>
     <td valign="middle" class="Result2" align="right">
-                &nbsp;&nbsp;&nbsp;&nbsp;</td>
+                &lt;&lt; <a href="dashboard.aspx" >Back to DashBoard</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
   </tr>
 
     <tr>
@@ -541,7 +549,7 @@ body {
     <td height="46" colspan="11" align="center" valign="middle" background="./images/shadow.png"><table width="960" border="0" align="center" cellpadding="0" cellspacing="0">
       <tr>
         <td width="944" height="24" align="center" valign="middle" bgcolor="#999999"><span class="Test">
-            Copyright © 2012-2013 Powered by SnipsOnline.Com All Rights 
+            Copyright © 2009-2010 Powered by SnipsOnline.Com All Rights 
             Reserved.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="aboutus.aspx" class="Test">About 
             Us</a> | <a href="Privacy.aspx" class="Test">Privacy</a> | <a href="tc.aspx" class="Test">
             Terms </a>|<a href="advertisement.aspx" class="Test">Advertise With Us</a> | <a href="contact.aspx" class="Test">
@@ -550,7 +558,6 @@ body {
     </table></td>
   </tr>
 </table>
-    </form>
     </form>
 </form>
 </body>

@@ -14,8 +14,8 @@ Public Class customFindingService
         req.Headers.Add("X-EBAY-SOA-SERVICE-NAME", "FindingService")
         req.Headers.Add("X-EBAY-SOA-OPERATION-NAME", "findItemsAdvanced")
         req.Headers.Add("X-EBAY-SOA-SERVICE-VERSION", "1.12.0")
-        req.Headers.Add("X-EBAY-SOA-GLOBAL-ID", "EBAY-SG")
-        req.Headers.Add("X-EBAY-SOA-SECURITY-APPNAME", "SnipsOnl-ae92-4927-a3fd-f2f4a707b33b")
+        req.Headers.Add("X-EBAY-SOA-GLOBAL-ID", "EBAY-US")
+        req.Headers.Add("X-EBAY-SOA-SECURITY-APPNAME", System.Configuration.ConfigurationManager.AppSettings("EBAYAppIDP"))
         req.Headers.Add("X-EBAY-SOA-MESSAGE-PROTOCOL", "SOAP11")
         Return req
     End Function

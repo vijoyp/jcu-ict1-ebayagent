@@ -55,11 +55,12 @@ Partial Class singleItem
                 setSearchTerm(Request.QueryString("itemname"))
                 setPage(Request.QueryString("pageno"))
                 setshippingC(Session("shipping"))
+                setLocal(Request.QueryString("Location"))
                 displaypopularSearches()
                 displayRecomItems()
 
 
-                PlaceHolder2.Controls.Add(New LiteralControl("<< <a href=""express.aspx?catParent=" & getCatID() & "&itemName=" & Server.UrlPathEncode(getSearchTerm()) & "&pageno=" & getCPage() & """>Back to Search</a>"))
+                PlaceHolder2.Controls.Add(New LiteralControl("<< <a href=""express.aspx?catParent=" & getCatID() & "&Location=" & getLocal() & "&itemName=" & Server.UrlPathEncode(getSearchTerm()) & "&pageno=" & getCPage() & """>Back to Search</a>"))
 
 
                 Dim service As Shopping = New Shopping()
@@ -93,14 +94,14 @@ Partial Class singleItem
                     End If
 
                     If Not res.Item.ConvertedBuyItNowPrice Is Nothing Then
-                        itemC = res.Item.ConvertedBuyItNowPrice.Value() * 1.8
+                        itemC = res.Item.ConvertedBuyItNowPrice.Value()
                     Else
-                        itemC = res.Item.ConvertedCurrentPrice.Value() * 1.8
+                        itemC = res.Item.ConvertedCurrentPrice.Value()
                     End If
 
                     If Not res.Item.ShippingCostSummary.ShippingServiceCost Is Nothing Then
                         If res.Item.ShippingCostSummary.ShippingServiceCost.Value <> 0 Then
-                            setshippingC(res.Item.ShippingCostSummary.ShippingServiceCost.Value * 1.8)
+                            setshippingC(res.Item.ShippingCostSummary.ShippingServiceCost.Value)
                         Else
                             setshippingC(30)
                         End If
@@ -119,8 +120,12 @@ Partial Class singleItem
                     PhCost.Controls.Add(New LiteralControl("<td align='right' class=Fields_Small>SGD $" & FormatNumber(getshippingC(), 2) & "</td>"))
                     PhCost.Controls.Add(New LiteralControl("</tr>"))
                     PhCost.Controls.Add(New LiteralControl("<tr>"))
+                    PhCost.Controls.Add(New LiteralControl("<td class=Fields_Small>Fees & GST: </td>"))
+                    PhCost.Controls.Add(New LiteralControl("<td align='right' class=Fields_Small>SGD $" & FormatNumber((getItemC() + getshippingC()) * 0.17, 2) & "</td>"))
+                    PhCost.Controls.Add(New LiteralControl("</tr>"))
+                    PhCost.Controls.Add(New LiteralControl("<tr>"))
                     PhCost.Controls.Add(New LiteralControl("<td class=Fields_Small><b>Total Cost: </b></td>"))
-                    PhCost.Controls.Add(New LiteralControl("<td align='right' class=Fields_Small><font color='red'><b>SGD $" & FormatNumber((getItemC() + getshippingC()), 2) & "</b></font></td>"))
+                    PhCost.Controls.Add(New LiteralControl("<td align='right' class=Fields_Small><font color='red'><b>SGD $" & FormatNumber((getItemC() + getshippingC() + ((getItemC() + getshippingC()) * 0.17)), 2) & "</b></font></td>"))
                     PhCost.Controls.Add(New LiteralControl("</tr>"))
                     PhCost.Controls.Add(New LiteralControl("<tr><td colspan=2><div class=styleblank></div><div class=styledashes></div></td></tr></table>"))
 
@@ -225,7 +230,13 @@ Partial Class singleItem
     Protected Sub buynowbtn_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles buynowBtn.Click
 
     End Sub
+    Private Sub setLocal(ByVal local As String)
+        Me.local = local
+    End Sub
 
+    Private Function getLocal() As String
+        Return Me.local
+    End Function
     Private Sub setSearchTerm(ByVal searchterm As String)
         Me.searchterm = searchterm
     End Sub
@@ -308,7 +319,7 @@ Partial Class singleItem
                 phTopSearches.Controls.Clear()
                 phTopSearches.Controls.Add(New LiteralControl("Can't Seem to find what your need? Try some of the popular searches in this category<br><BR>"))
                 For i = 0 To popularsearchesList.Count - 1
-                    phTopSearches.Controls.Add(New LiteralControl(i + 1 & ". " & "<a href='express.aspx?pageno=1" & "&catparent=" & getCatID() & "&itemname=" & popularsearchesList(i) & "'>" & popularsearchesList(i) & "</a><BR>"))
+                    phTopSearches.Controls.Add(New LiteralControl(i + 1 & ". " & "<a href='express.aspx?pageno=1" & "&Location=" & GetLocal() & "&catparent=" & getCatID() & "&itemname=" & popularsearchesList(i) & "'>" & popularsearchesList(i) & "</a><BR>"))
                 Next
             Else
                 phTopSearches.Controls.Clear()

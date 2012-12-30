@@ -491,7 +491,8 @@ body {
     <td class="style45"></td>
     <td align="right" valign="middle" class="style56"></td>
     <td valign="middle" class="style26" class=Fields_Small2 colspan="2">
-        &nbsp;</td>
+        <asp:CheckBox ID="CheckBox1" runat="server" Text=" Singapore Only" />
+      </td>
   </tr>
  <tr>
     <td class="style45"></td>
@@ -550,6 +551,7 @@ body {
     </table></td>
   </tr>
 </table>
+    </form>
     </form>
 </form>
 </body>
