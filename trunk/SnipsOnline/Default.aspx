@@ -256,7 +256,7 @@ body {
                       <asp:Login ID="Login1" runat="server" Height="174px" 
                           Width="266px" LoginButtonImageUrl="~/images/loginbtn.png" LoginButtonText="" 
                           LoginButtonType="Image" TitleText="" style="margin-top: 33px; height: 114px;" 
-                          DestinationPageUrl="~/express.aspx" PasswordRecoveryText="Forgotten Your Password?" 
+                          DestinationPageUrl="~/dashboard.aspx" PasswordRecoveryText="Forgotten Your Password?" 
                           VisibleWhenLoggedIn="False" CreateUserText="Register For New Account" 
                           CreateUserUrl="register.aspx" EnableViewState="False" 
                           PasswordRecoveryUrl="rsetpasswd.aspx" 
@@ -334,7 +334,7 @@ body {
                       <br />
                       <br />
                       <asp:LoginName ID="LoginName1" runat="server" 
-                          FormatString="&lt;br&gt;Welcome Back, &lt;b&gt;{0}&lt;/B&gt;. &lt;br&gt;&lt;br&gt;You are already logged on to this system. Please proceed to your dashboard by clicking &lt;a class=&quot;result2&quot; href=&quot;./express.aspx&quot;&gt;here&lt;/a&gt;&lt;br&gt;&lt;br&gt;If you are not {0}, please " 
+                          FormatString="&lt;br&gt;Welcome Back, &lt;b&gt;{0}&lt;/B&gt;. &lt;br&gt;&lt;br&gt;You are already logged on to this system. Please proceed to your dashboard by clicking &lt;a class=&quot;result2&quot; href=&quot;./dashboard.aspx&quot;&gt;here&lt;/a&gt;&lt;br&gt;&lt;br&gt;If you are not {0}, please " 
                           CssClass="Result2"/>
                       <asp:LoginStatus ID="LoginStatus2" runat="server" LoginText="" 
                           LogoutPageUrl="~/Default.aspx" LogoutText="Sign-out" cssClas="Result" 
