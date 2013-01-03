@@ -14,23 +14,31 @@ Partial Class express
     Dim cpage As Integer
     Dim local As String
     Dim sandbox As Boolean
+    Dim location As String
 
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
-        Dim catid() As String
-        Dim proceed As Boolean = False
-        Dim skipform As Boolean = False
-
         Dim m As MembershipUser = Membership.GetUser
 
         If Not m Is Nothing Then
-            Dim userid As String = m.ProviderUserKey.ToString
-            setCartQty(userid)
+            setCartQty(m.ProviderUserKey.ToString)
+
+
+            Dim catid() As String
+            Dim proceed As Boolean = False
+            Dim skipform As Boolean = False
+
 
             phTopSearches.Controls.Add(New LiteralControl("Select a Category and we will show you the top search by others like you ..."))
             phRecItems.Controls.Add(New LiteralControl("Select a Category and we will the best items for you to snips ..."))
             setPage(1)
+
+            If CheckBox1.Checked Then
+                setLocation("SG")
+            Else
+                setLocation("ALL")
+            End If
 
             If Not Page.IsPostBack Then
 
@@ -43,13 +51,13 @@ Partial Class express
                     setSearchTerm(Server.UrlEncode(Request.QueryString("itemname")))
                     itemname.Text = getSearchTerm()
                     catparent.SelectedValue = getCatID()
-
+                    setLocation(Request.QueryString("Location").Trim())
                     skipform = True
                     proceed = True
 
                 End If
                 If Session("catParent") <> "" And Session("itemname") <> "" Then
-
+                    MsgBox("TEST")
                     setCatId(Session("catParent"))
                     setPage(1)
                     setSearchTerm(Session("itemname"))
@@ -59,14 +67,20 @@ Partial Class express
                     proceed = True
                 End If
 
-            Else
-
                 If Request.Form("catParent") <> "" And Request.Form("itemname") <> "" And skipform = False Then
-
-                    setCatId(Request.QueryString("catParent"))
+                    setCatId(Request.Form("catParent"))
                     setPage(1)
-                    setSearchTerm(Server.UrlEncode(Request.QueryString("itemname")))
+                    setSearchTerm(Server.UrlEncode(Request.Form("itemname")))
+                    itemname.Text = getSearchTerm()
+                    catparent.SelectedValue = getCatID()
+                    proceed = True
+                End If
 
+            Else
+                If Request.Form("catParent") <> "" And Request.Form("itemname") <> "" And skipform = False Then
+                    setCatId(Request.Form("catParent"))
+                    setPage(1)
+                    setSearchTerm(Server.UrlEncode(Request.Form("itemname")))
                     proceed = True
                 End If
 
@@ -87,7 +101,31 @@ Partial Class express
 
                 Dim service As FindingService = New FindingService()
 
-                service.Url = System.Configuration.ConfigurationManager.AppSettings("FindingAPIP") & "?OPERATION-NAME=findItemsAdvanced&SERVICE-NAME=FindingService&SERVICE-VERSION=1.12.0&GLOBAL-ID=EBAY-US&SECURITY-APPNAME=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppIDP") & "&RESPONSE-DATA-FORMAT=XML&keywords=" & getSearchTerm() & "&descriptionSearchSpecified=True&descriptionSearch=True&sortOrderSpecified=True&sortOrder=BESTMATCH&categoryid(0)=1&categoryid(1)=220&categoryid(2)=45100&itemfilter(0).name=HideDuplicate&Items&itemFilter(0).value(0)=True&itemFilter(1).name=ListingType&itemFilter(1).value(0)=AuctionWithBIN&itemFilter(2).name=Condition&itemFilter(2).value(0)=New"
+                service.Url = System.Configuration.ConfigurationManager.AppSettings("FindingAPI") & "?OPERATION-NAME=findItemsAdvanced&SERVICE-NAME=FindingService&SERVICE-VERSION=1.12.0&GLOBAL-ID=EBAY-US&SECURITY-APPNAME=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppID") & "&RESPONSE-DATA-FORMAT=XML&keywords=" & getSearchTerm() & "&descriptionSearchSpecified=True&descriptionSearch=True&sortOrderSpecified=True&sortOrder=BESTMATCH&categoryid(0)=1&categoryid(1)=220&categoryid(2)=45100&itemfilter(0).name=HideDuplicate&Items&itemFilter(0).value(0)=True&itemFilter(1).name=ListingType&itemFilter(1).value(0)=AuctionWithBIN&itemFilter(2).name=Condition&itemFilter(2).value(0)=New&itemFilter(2).value(1)=1500&NewitemFilter(2).value(2)=2000"
+                req.categoryId = {"1", "220", "45100"}
+                req.descriptionSearchSpecified = True
+                req.descriptionSearch = True
+                req.sortOrderSpecified = True
+                req.sortOrder = SortOrderType.BestMatch
+                req.keywords = getSearchTerm()
+
+
+                Dim b() As ItemFilter = {New ItemFilter(), New ItemFilter()}
+                b(0).name = ItemFilterType.LocatedIn
+
+                If getlocation() = "SG" Then
+                    b(0).value = {"SG"}
+                Else
+                    b(0).value = {"SG", "US", "AU"}
+                End If
+
+                b(1).name = ItemFilterType.ListingType
+                b(1).value = {"AuctionWithBIN", "FixedPrice"}
+                ''b(2).name = ItemFilterType.Condition
+                ''b(2).value = {"New"}
+
+                req.itemFilter = b
+
                 res = service.findItemsAdvanced(req)
                 Dim totalitems As Integer = res.searchResult.count
                 Dim totalpages As Integer
@@ -106,167 +144,189 @@ Partial Class express
 
 
 
-
-                service.Url = System.Configuration.ConfigurationManager.AppSettings("FindingAPIP") & "?OPERATION-NAME=findItemsAdvanced&SERVICE-NAME=FindingService&SERVICE-VERSION=1.12.0&GLOBAL-ID=EBAY-US&SECURITY-APPNAME=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppIDP") & "&RESPONSE-DATA-FORMAT=XML&keywords=" & getSearchTerm() & "&descriptionSearchSpecified=True&descriptionSearch=True&pageNumberSpecified=True&sortOrderSpecified=True&sortOrder=BESTMATCH&categoryid(0)=1&categoryid(1)=220&categoryid(2)=45100&itemfilter(0).name=HideDuplicate&Items&itemFilter(0).value(0)=True&itemFilter(1).name=ListingType&itemFilter(1).value(0)=AuctionWithBIN&itemFilter(2).name=Condition&itemFilter(2).value(0)=New"
+                service.Url = System.Configuration.ConfigurationManager.AppSettings("FindingAPI") & "?OPERATION-NAME=findItemsAdvanced&SERVICE-NAME=FindingService&SERVICE-VERSION=1.12.0&GLOBAL-ID=EBAY-US&SECURITY-APPNAME=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppID") & "&RESPONSE-DATA-FORMAT=XML&keywords=" & getSearchTerm() & "&descriptionSearchSpecified=True&descriptionSearch=True&sortOrderSpecified=True&sortOrder=BESTMATCH&categoryid(0)=1&categoryid(1)=220&categoryid(2)=45100&itemfilter(0).name=HideDuplicate&Items&itemFilter(0).value(0)=True&itemFilter(1).name=ListingType&itemFilter(1).value(0)=AuctionWithBIN&itemFilter(2).name=Condition&itemFilter(2).value(0)=New&itemFilter(2).value(1)=1500&NewitemFilter(2).value(2)=2000"
                 Dim a = New PaginationInput()
                 a.pageNumberSpecified = True
                 a.pageNumber = getCPage()
                 a.entriesPerPageSpecified = True
                 a.entriesPerPage = 10
-
-
                 req.paginationInput = a
 
+
+                req.categoryId = {"1", "220", "45100"}
+                req.descriptionSearchSpecified = True
+                req.descriptionSearch = True
+                req.sortOrderSpecified = True
+                req.sortOrder = SortOrderType.BestMatch
+                req.keywords = getSearchTerm()
+
+                b(0).name = ItemFilterType.LocatedIn
+
+                If getlocation() = "SG" Then
+                    b(0).value = {"SG"}
+                Else
+                    b(0).value = {"SG", "US", "AU"}
+                End If
+
+
+                b(1).name = ItemFilterType.ListingType
+                b(1).value = {"AuctionWithBIN", "FixedPrice"}
+                ''b(2).name = ItemFilterType.Condition
+                ''b(2).value = {"New"}
+
+                req.itemFilter = b
+
+
                 res = service.findItemsAdvanced(req)
-                Dim searchres As SearchResult = res.searchResult
 
+                If Not res Is Nothing Then
+                    Dim searchres As SearchResult = res.searchResult
 
-                displayResults(searchres, totalitems, totalpages)
-
+                    displayResults(searchres, totalitems, totalpages)
+                End If
             End If
-
         Else
             Response.Redirect("default.aspx")
         End If
-
     End Sub
 
     Public Sub displayResults(ByVal searchResults As SearchResult, ByVal totalitems As Integer, ByVal totalpages As Integer)
 
+        Try
+
+            If totalitems < 1 Then
+
+                PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'>"))
+                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class='bigRegister2'>No Items Found. Please Try another Search Term ...</td></tr></table>"))
+
+            Else
 
 
-        If totalitems < 1 Then
 
-            PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'>"))
-            PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class='bigRegister2'>No Items Found. Please Try another Search Term ...</td></tr></table>"))
+                PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'>"))
+                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class='bigRegister'>Total Items Found : " & totalitems & "</td></tr>"))
+                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3'><div class='styleBlank'></div></td></tr>"))
 
-        Else
+                If totalpages > 1 Then
+                    Dim display1 As String
+                    PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class=Result align=right>Page : "))
 
+                    For i = 1 To totalpages
 
+                        If i <> 1 Then
+                            display1 = " | "
+                        Else
+                            display1 = " "
+                        End If
 
-            PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'>"))
-            PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class='bigRegister'>Total Items Found : " & totalitems & "</td></tr>"))
-            PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3'><div class='styleBlank'></div></td></tr>"))
+                        If i = CType(getCPage(), Integer) Then
+                            PlaceHolder1.Controls.Add(New LiteralControl(display1 & i))
+                        Else
+                            PlaceHolder1.Controls.Add(New LiteralControl(display1 & "<a href=""express.aspx?pageno=" & i & "&Location=" & getlocation() & "&catparent=" & getCatID() & "&itemname=" & Server.UrlPathEncode(getSearchTerm()) & """><u>" & i & "</u></a>"))
+                        End If
 
-            If totalpages > 1 Then
-                Dim display1 As String
-                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class=Result align=right>Page : "))
-
-                For i = 1 To totalpages
-
-                    If i <> 1 Then
-                        display1 = " | "
-                    Else
-                        display1 = " "
-                    End If
-
-                    If i = CType(getCPage(), Integer) Then
-                        PlaceHolder1.Controls.Add(New LiteralControl(display1 & i))
-                    Else
-                        PlaceHolder1.Controls.Add(New LiteralControl(display1 & "<a href=""express.aspx?pageno=" & i & "&catparent=" & getCatID() & "&itemname=" & Server.UrlPathEncode(getSearchTerm()) & """><u>" & i & "</u></a>"))
-                    End If
-
-                Next
-                PlaceHolder1.Controls.Add(New LiteralControl("</td></tr>"))
-                PlaceHolder1.Controls.Add(New LiteralControl("</table>"))
-            End If
-
-            PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'><tr><td colspan='3'><div class=styleBlank></div></td></tr>"))
-            PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'>"))
-
-
-            PlaceHolder1.Controls.Add(New LiteralControl("<tr>"))
-            PlaceHolder1.Controls.Add(New LiteralControl("<td colspan='4'><div class=styleDashes></div></td>"))
-            PlaceHolder1.Controls.Add(New LiteralControl("</tr>"))
-
-            Dim j As Integer = 0
-
-            Dim items1 As SearchResult = searchResults
-
-
-            For j = 0 To items1.Count - 1
-
-                Dim src As String
-                If items1.item(j).galleryURL = "" Then
-                    src = "./images/picnotfound.png"
-                Else
-                    src = items1.item(j).galleryURL
+                    Next
+                    PlaceHolder1.Controls.Add(New LiteralControl("</td></tr>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("</table>"))
                 End If
 
-
-                Dim shippingcost As Double = 0.0
-                Dim cost As Double = 0.0
-
-
-                If Not items1.item(j).listingInfo.buyItNowPrice Is Nothing Then
-                    cost = items1.item(j).listingInfo.buyItNowPrice.Value * 1.8
-                Else
-                    cost = items1.item(j).sellingStatus.currentPrice.Value * 1.8
-                End If
-
-                If Not items1.item(j).shippingInfo.shippingServiceCost Is Nothing Then
-                    shippingcost = items1.item(j).shippingInfo.shippingServiceCost.Value * 1.8
-                Else
-                    shippingcost = 30
-                End If
-
-                If shippingcost = 0 Then
-                    shippingcost = 30
-                End If
+                PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'><tr><td colspan='3'><div class=styleBlank></div></td></tr>"))
+                PlaceHolder1.Controls.Add(New LiteralControl("<table width='590' border='0' cellspacing='0' cellpadding='0'>"))
 
 
-
-                Dim trhighlight As String
-
-                If j Mod 2 = 1 Then
-                    trhighlight = "<tr bgcolor=#FEF0D8>"
-                Else
-                    trhighlight = "<tr>"
-                End If
-
-                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='4'><div class=styleBlank></div></td></tr>"))
-                PlaceHolder1.Controls.Add(New LiteralControl(trhighlight))
-                PlaceHolder1.Controls.Add(New LiteralControl("<td width='70' align=left>" & "<img src=""" & src & """ width=46 height=70 border=1 color=Black>" & "</td>"))
-                PlaceHolder1.Controls.Add(New LiteralControl("<td width='370' align=left class=Result2>" & "<a href=""singleitem.aspx?pageno=" & getCPage() & "&catparent=" & getCatID() & "&itemname=" & Server.UrlPathEncode(getSearchTerm()) & "&itemid=" & items1.item(j).itemId & "&shipping=" & shippingcost & """>" & items1.item(j).title & "</a><br>" & items1.item(j).subtitle & "<br>Item Ships From :" & items1.item(j).location & "</td>"))
-                PlaceHolder1.Controls.Add(New LiteralControl("<td width='95' align=center class=stylesearchcell><u>Buy Now</u><br><font color='red'><b>SGD $ " & FormatNumber(cost, 2) & "</b></font></td>"))
-                PlaceHolder1.Controls.Add(New LiteralControl("<td width='65' class=Result align=center>" & "Ships For<br><br><img src=./images/iconSaveOnShipping_58x33.gif width=38 height=22><br><div class=Fields_Small4>SGD $ " & FormatNumber(shippingcost, 2) & "</div>" & "</td>"))
-                PlaceHolder1.Controls.Add(New LiteralControl("</tr>"))
-                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='4'><div class=styleBlank></div></td></tr>"))
                 PlaceHolder1.Controls.Add(New LiteralControl("<tr>"))
                 PlaceHolder1.Controls.Add(New LiteralControl("<td colspan='4'><div class=styleDashes></div></td>"))
                 PlaceHolder1.Controls.Add(New LiteralControl("</tr>"))
-                shippingcost = 0
-            Next
 
-            PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3'><div class='styleBlank'></div></td></tr>"))
+                Dim j As Integer = 0
 
-            If totalpages > 1 Then
-                Dim display1 As String
-                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class=Result align=right>Page : "))
+                Dim items1 As SearchResult = searchResults
 
-                For i = 1 To totalpages
 
-                    If i <> 1 Then
-                        display1 = " | "
+                For j = 0 To items1.count - 1
+
+                    Dim src As String
+                    If items1.item(j).galleryURL = "" Then
+                        src = "./images/picnotfound.png"
                     Else
-                        display1 = " "
+                        src = items1.item(j).galleryURL
                     End If
 
-                    If getCPage() = i Then
-                        PlaceHolder1.Controls.Add(New LiteralControl(display1 & i))
+
+                    Dim shippingcost As Double = 0.0
+                    Dim cost As Double = 0.0
+
+
+                    If Not items1.item(j).listingInfo.buyItNowPrice Is Nothing Then
+                        cost = items1.item(j).listingInfo.buyItNowPrice.Value
                     Else
-                        PlaceHolder1.Controls.Add(New LiteralControl(display1 & "<a href='express.aspx?pageno=" & i & "&catparent=" & getCatID() & "&itemname=" & getSearchTerm() & "'><u>" & i & "</u></a>"))
+                        cost = items1.item(j).sellingStatus.currentPrice.Value
                     End If
 
+                    If Not items1.item(j).shippingInfo.shippingServiceCost Is Nothing Then
+                        shippingcost = items1.item(j).shippingInfo.shippingServiceCost.Value
+                    Else
+                        shippingcost = 30
+                    End If
+
+                    If shippingcost = 0 Then
+                        shippingcost = 30
+                    End If
+
+
+
+                    Dim trhighlight As String
+
+                    If j Mod 2 = 1 Then
+                        trhighlight = "<tr bgcolor=#FEF0D8>"
+                    Else
+                        trhighlight = "<tr>"
+                    End If
+
+                    PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='4'><div class=styleBlank></div></td></tr>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl(trhighlight))
+                    PlaceHolder1.Controls.Add(New LiteralControl("<td width='70' align=left>" & "<img src=""" & src & """ width=46 height=70 border=1 color=Black>" & "</td>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("<td width='370' align=left class=Result2>" & "<a href=""singleitem.aspx?pageno=" & getCPage() & "&Location=" & getlocation() & "&catparent=" & getCatID() & "&itemname=" & Server.UrlPathEncode(getSearchTerm()) & "&itemid=" & items1.item(j).itemId & "&shipping=" & shippingcost & """>" & items1.item(j).title & "</a><br>" & items1.item(j).subtitle & "<br>Item Ships From :" & items1.item(j).location & "</td>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("<td width='95' align=center class=stylesearchcell><u>Buy Now</u><br><font color='red'><b>SGD $ " & FormatNumber(cost, 2) & "</b></font></td>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("<td width='65' class=Result align=center>" & "Ships For<br><br><img src=./images/iconSaveOnShipping_58x33.gif width=38 height=22><br><div class=Fields_Small4>SGD $ " & FormatNumber(shippingcost, 2) & "</div>" & "</td>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("</tr>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='4'><div class=styleBlank></div></td></tr>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("<tr>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("<td colspan='4'><div class=styleDashes></div></td>"))
+                    PlaceHolder1.Controls.Add(New LiteralControl("</tr>"))
+                    shippingcost = 0
                 Next
-                PlaceHolder1.Controls.Add(New LiteralControl("</td></tr>"))
 
+                PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3'><div class='styleBlank'></div></td></tr>"))
+
+                If totalpages > 1 Then
+                    Dim display1 As String
+                    PlaceHolder1.Controls.Add(New LiteralControl("<tr><td colspan='3' class=Result align=right>Page : "))
+
+                    For i = 1 To totalpages
+
+                        If i <> 1 Then
+                            display1 = " | "
+                        Else
+                            display1 = " "
+                        End If
+
+                        If getCPage() = i Then
+                            PlaceHolder1.Controls.Add(New LiteralControl(display1 & i))
+                        Else
+                            PlaceHolder1.Controls.Add(New LiteralControl(display1 & "<a href='express.aspx?pageno=" & i & "&catparent=" & getCatID() & "&itemname=" & getSearchTerm() & "'><u>" & i & "</u></a>"))
+                        End If
+
+                    Next
+                    PlaceHolder1.Controls.Add(New LiteralControl("</td></tr>"))
+
+                End If
+
+                PlaceHolder1.Controls.Add(New LiteralControl("</table>"))
             End If
-
-            PlaceHolder1.Controls.Add(New LiteralControl("</table>"))
-        End If
-
-
+        Catch
+            Response.Redirect("express.aspx")
+        End Try
     End Sub
 
     Private Sub setparentlist()
@@ -300,8 +360,8 @@ Partial Class express
 
     Private Function setShoppingUrl(ByVal callname As String) As String
         Dim Str As String
-        Str = System.Configuration.ConfigurationManager.AppSettings("ShoppingAPIP")
-        Str = Str & "?&appid=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppIDP")
+        Str = System.Configuration.ConfigurationManager.AppSettings("ShoppingAPI")
+        Str = Str & "?&appid=" & System.Configuration.ConfigurationManager.AppSettings("EBAYAppID")
         Str = Str & "&version=803"
         Str = Str & "&siteid=" & "EBAY-US"
         Str = Str & "&callname=" & callname
@@ -392,15 +452,15 @@ Partial Class express
                 For i = 0 To res.ItemArray.Count - 1
 
                     If Not res.ItemArray(i).ConvertedBuyItNowPrice Is Nothing Then
-                        cost = res.ItemArray(i).ConvertedBuyItNowPrice.Value * 1.8
+                        cost = res.ItemArray(i).ConvertedBuyItNowPrice.Value
                     Else
 
                         If Not res.ItemArray(i).ConvertedCurrentPrice Is Nothing Then
-                            cost = res.ItemArray(i).ConvertedCurrentPrice.Value * 1.8
+                            cost = res.ItemArray(i).ConvertedCurrentPrice.Value
                         End If
 
                         If Not res.ItemArray(i).ShippingCostSummary.ShippingServiceCost Is Nothing Then
-                            Shippingcost = res.ItemArray(i).ShippingCostSummary.ShippingServiceCost.Value * 1.8
+                            Shippingcost = res.ItemArray(i).ShippingCostSummary.ShippingServiceCost.Value
                         End If
 
 
@@ -434,7 +494,7 @@ Partial Class express
                     phRecItems.Controls.Add(New LiteralControl("</tr>"))
                     phRecItems.Controls.Add(New LiteralControl(trhighlight))
                     phRecItems.Controls.Add(New LiteralControl("<td width=97 height=26 class=Result2><font color=red>S$ <b>" & FormatNumber(cost, 2) & "</b></font></td>"))
-                    phRecItems.Controls.Add(New LiteralControl("<td width=82 class=Result2>" & "<a href='singleitem.aspx?pageno=" & getCPage() & "&catparent=" & getCatID() & "&itemname=" & getSearchTerm() & "&itemid=" & res.ItemArray(i).ItemID & "'>More info</a></td>"))
+                    phRecItems.Controls.Add(New LiteralControl("<td width=82 class=Result2>" & "<a href='singleitem.aspx?pageno=" & getCPage() & "&Locationt=" & getlocation() & "&catparent=" & getCatID() & "&itemname=" & getSearchTerm() & "&itemid=" & res.ItemArray(i).ItemID & "'>More info</a></td>"))
                     phRecItems.Controls.Add(New LiteralControl("</tr>"))
                     phRecItems.Controls.Add(New LiteralControl("<tr>"))
                     phRecItems.Controls.Add(New LiteralControl("<td colspan=4><div class=styleblank></div><div class=styledashes></div></td>"))
@@ -469,6 +529,12 @@ Partial Class express
 
     Private Function getCatID() As String
         Return Me.cat
+    End Function
+    Private Sub setLocation(ByVal location As String)
+        Me.location = location
+    End Sub
+    Private Function getlocation() As String
+        Return Me.location
     End Function
 
     Private Function getCPage() As String
